@@ -17,18 +17,18 @@ add_compile_definitions(_CRT_NONSTDC_NO_DEPRECATE)
 add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 
 # Treat warnings as errors
-add_compile_options(/WX)
+#add_compile_options(/WX)
 # Set warning level 4
-add_compile_options(/W4)
+#add_compile_options(/W4)
 # Enable multi-processor compilation to accelerate the build process
-add_compile_options(/MP)
+#add_compile_options(/MP)
 # Enable a more standardized preprocessor behavior
-add_compile_options(/Zc:preprocessor)
+#add_compile_options(/Zc:preprocessor)
 
 # Linker Optimization: Remove unreferenced data & functions
-add_link_options(/OPT:REF)
+#add_link_options(/OPT:REF)
 # Linker Optimization: Merge identical code sections when possible
-add_link_options(/OPT:ICF)
+#add_link_options(/OPT:ICF)
 
 # Include macros from the cmakes folder
 #list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmakes)
