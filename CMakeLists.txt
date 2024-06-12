@@ -1,55 +1,38 @@
-# Ensure the minimum required version of CMake is available, otherwise, throw an error
-cmake_minimum_required(VERSION 3.27 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.21)
+project(emscripten-test)
 
-# Set the project name
-project("Identity")
+add_executable(main src/main.cpp src/ImGuiFileDialog.cpp)
+target_compile_features(main PRIVATE cxx_std_17)
 
-# Set C++20 as the standard to be used
-set(CMAKE_CXX_STANDARD 23)
-# Generate an error if C++23 support is not available
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(GLFWPP_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+add_subdirectory(external/glfwpp)
+add_subdirectory(external/imgui)
+add_subdirectory(external/freetype)
+target_link_libraries(main PRIVATE GLFWPP Imgui freetype)
 
-# Avoid conflicts with <Windows.h> min-max functions
-add_compile_definitions(NOMINMAX)
+file(GLOB_RECURSE RESOURCE_FILES ${PROJECT_SOURCE_DIR}/res/*)
+add_custom_command(
+        TARGET main POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory 
+                ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/res)
+add_custom_command(
+        TARGET main POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+                ${RESOURCE_FILES}
+                ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/res)
 
-# Suppress some compiler warnings to reduce noise
-add_compile_definitions(_CRT_NONSTDC_NO_DEPRECATE)
-add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+if (CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    target_compile_definitions(main PRIVATE "__EMSCRIPTEN__")
 
-# Treat warnings as errors
-#add_compile_options(/WX)
-# Set warning level 4
-#add_compile_options(/W4)
-# Enable multi-processor compilation to accelerate the build process
-#add_compile_options(/MP)
-# Enable a more standardized preprocessor behavior
-#add_compile_options(/Zc:preprocessor)
-
-# Linker Optimization: Remove unreferenced data & functions
-#add_link_options(/OPT:REF)
-# Linker Optimization: Merge identical code sections when possible
-#add_link_options(/OPT:ICF)
-
-# Include macros from the cmakes folder
-#list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmakes)
-#include(core_dependencies)
-#include(unit_tests)
-#include(folder_utils)
-
-# Include the root folder of the framework code as an additional include directory
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
-
-# Include the 'thirdparty' folder containing third-party libraries
-add_subdirectory(thirdparty)
-# Include the 'src' folder containing the app code
-add_subdirectory(src)
-# Include the 'resources' folder containing the data for all the apps being built
-#add_subdirectory(resources)
-
-# Call this macro from the cmakes folder to resolve common dependencies like SDL, OpenGL, OpenAL and so on
-#core_dependencies()
-
-# Set Identity as the default startup project for the generated Visual Studio solution
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Identity)
-# Set a custom folder for the predefined targets in the generated Visual Studio solution
-#set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "_cmakeAndPostBuild")
+    set(CMAKE_CXX_LINKER_WRAPPER_FLAG "")
+    target_link_options(main PRIVATE "LINKER:SHELL:-sEXPORTED_FUNCTIONS=[_main,_setDPI] -s EXTRA_EXPORTED_RUNTIME_METHODS=[ccall] -s ALLOW_MEMORY_GROWTH=1 --preload-file ${PROJECT_SOURCE_DIR}/res@res")
+    add_custom_command(
+        TARGET main POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+                ${CMAKE_SOURCE_DIR}/index.html
+                ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/index.html)
+else()
+    add_subdirectory(external/glew-cmake)
+    target_link_libraries(main PRIVATE libglew_static)
+    target_compile_definitions(main PRIVATE GLEW_STATIC)
+endif()
