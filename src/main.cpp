@@ -3,15 +3,18 @@
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #include <SDL_opengles2.h>
-#endif
-
 #define GLFW_INCLUDE_ES3
 #include <GLES3/gl3.h>
 #include <SDL2/SDL.h>
+#else _WIN32
+#include <SDL.h>
+#include <glad/gl.h>
+#endif
 
-#include "../external/imgui/imgui.h"
-#include "../external/imgui/imgui_impl_sdl2.h"
-#include "../external/imgui/imgui_impl_opengl3.h"
+
+#include "imgui/imgui.h"
+#include "imgui/backends/imgui_impl_sdl2.h"
+#include "imgui/backends/imgui_impl_opengl3.h"
 #include <iostream>
 
 SDL_Window *g_window;
@@ -23,34 +26,38 @@ int g_width;
 int g_height;
 
 // Function used by c++ to get the size of the html canvas
-EM_JS(int, canvas_get_width, (), {
+/*EM_JS(int, canvas_get_width, (), {
     return Module.canvas.width;
-});
+    });
+    */
+    // Function used by c++ to get the size of the html canvas
+    /*EM_JS(int, canvas_get_height, (), {
+        return Module.canvas.height;
+        });
+        */
+        // Function called by javascript
+        /*EM_JS(void, resizeCanvas, (), {
+            js_resizeCanvas();
+        });*/
+int canvas_get_width() {
+    return 800;
+}
 
-// Function used by c++ to get the size of the html canvas
-EM_JS(int, canvas_get_height, (), {
-    return Module.canvas.height;
-});
+int canvas_get_height() {
+    return 600;
+}
 
-// Function called by javascript
-/*EM_JS(void, resizeCanvas, (), {
-    js_resizeCanvas();
-});*/
-
-void on_size_changed()
-{
+void on_size_changed() {
     // glfwSetWindowSize(g_window, g_width, g_height);
 
     ImGui::SetCurrentContext(ImGui::GetCurrentContext());
 }
 
-void loop()
-{
+void loop() {
     int width = canvas_get_width();
     int height = canvas_get_height();
 
-    if (width != g_width || height != g_height)
-    {
+    if (width != g_width || height != g_height) {
         g_width = width;
         g_height = height;
         on_size_changed();
@@ -83,8 +90,7 @@ void loop()
     }
 
     // 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name your windows.
-    if (show_another_window)
-    {
+    if (show_another_window) {
         ImGui::Begin("Another Window", &show_another_window);
         ImGui::Text("Hello from another window!");
         if (ImGui::Button("Close Me"))
@@ -93,55 +99,64 @@ void loop()
     }
 
     // 3. Show the ImGui demo window. Most of the sample code is in ImGui::ShowDemoWindow(). Read its code to learn more about Dear ImGui!
-    if (show_demo_window)
-    {
+    if (show_demo_window) {
         // ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver); // Normally user code doesn't need/want to call this because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!
         // ImGui::ShowDemoWindow(&show_demo_window);
     }
 
     ImGui::Render();
 
-    int display_w, display_h;
+    //int display_w, display_h;
     SDL_GL_MakeCurrent(g_window, context);
     // glfwMakeContextCurrent(g_window);
     // glfwGetFramebufferSize(g_window, &display_w, &display_h);
-    // glViewport(0, 0, display_w, display_h);
+    // glViewport(0, 0, 1000, 1000);
     glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    auto error = glGetError();
+    if (error != GL_NO_ERROR) {
+        std::cout << "Error: " << error << std::endl;
+    }
+
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     // glfwMakeContextCurrent(g_window);
+    SDL_GL_SwapWindow(g_window);
 }
 
-int init_gl()
-{
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
-    {
+int init_gl() {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
         printf("Error: %s\n", SDL_GetError());
         return -1;
     }
 
     // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL
 
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+#ifdef __EMSCRIPTEN__
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+#else
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+#endif
+    SDL_GL_SetSwapInterval(1);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
     // Open a window and create its OpenGL context
     int canvasWidth = g_width;
     int canvasHeight = g_height;
     g_window =
         SDL_CreateWindow("Hello Triangle Minimal",
-                         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                         canvasWidth, canvasHeight,
-                         SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
+            SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+            canvasWidth, canvasHeight,
+            SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
 
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-    SDL_GL_SetSwapInterval(1);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     context = SDL_GL_CreateContext(g_window);
-    if (g_window == NULL)
-    {
+    if (g_window == NULL) {
         fprintf(stderr, "Failed to open GLFW window.\n");
         //   glfwTerminate();
         return -1;
@@ -149,11 +164,17 @@ int init_gl()
     SDL_GL_MakeCurrent(g_window, context);
     // glfwMakeContextCurrent(g_window); // Initialize GLEW
 
+#ifndef __EMSCRIPTEN__
+    int version = gladLoadGL((GLADloadfunc)SDL_GL_GetProcAddress);
+    if (version == 0) {
+        // print errors
+    }
+#endif
+
     return 0;
 }
 
-int init_imgui()
-{
+int init_imgui() {
     // Setup Dear ImGui binding
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -177,20 +198,17 @@ int init_imgui()
     return 0;
 }
 
-int init()
-{
+int init() {
     init_gl();
     init_imgui();
     return 0;
 }
 
-void quit()
-{
+void quit() {
     // glfwTerminate();
 }
 
-extern "C" int main(int argc, char **argv)
-{
+extern "C" int main(int argc, char **argv) {
     g_width = canvas_get_width();
     g_height = canvas_get_height();
     if (init() != 0)
@@ -198,6 +216,10 @@ extern "C" int main(int argc, char **argv)
 
 #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop(loop, 0, 1);
+#else
+    while (true) {
+        loop();
+    }
 #endif
 
     quit();
