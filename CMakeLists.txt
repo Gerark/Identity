@@ -12,7 +12,7 @@ add_executable(${TARGET_NAME} src/main.cpp)
 # Check if Emscripten is being used
 if(EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2 -s USE_WEBGL2=1 -s WASM=1 -s FULL_ES3=1 --shell-file ../src/emscripten_shell.html")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2 -s USE_WEBGL2=1 -s WASM=1 -s FULL_ES3=1")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_SDL=2")
     target_sources(${TARGET_NAME} PRIVATE
         external/imgui/imgui/backends/imgui_impl_sdl2.cpp
