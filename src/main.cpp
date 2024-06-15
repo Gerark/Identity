@@ -74,7 +74,7 @@ void loop() {
     {
         static float f = 0.0f;
         static int counter = 0;
-        ImGui::Text("Hello, world!");                            // Display some text (you can use a format string too)
+        ImGui::Text("Let's test just this!!!");                            // Display some text (you can use a format string too)
         ImGui::SliderFloat("float", &f, 0.0f, 1.0f);             // Edit 1 float using a slider from 0.0f to 1.0f
         ImGui::ColorEdit3("clear color", (float *)&clear_color); // Edit 3 floats representing a color
 
