@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 
 set(TARGET_NAME MyProject)
+set(COMMON_SOURCES src/main.cpp)
 
 # Set the project name and version
 project(${TARGET_NAME}  VERSION 1.0)
@@ -12,8 +13,16 @@ add_executable(${TARGET_NAME} src/main.cpp)
 if(EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2 -s USE_WEBGL2=1 -s WASM=1 -s FULL_ES3=1")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_SDL=2 -s USE_WEBGL2=1 -s WASM=1 -s FULL_ES3=1")
-    target_link_libraries(${TARGET_NAME} imgui)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_SDL=2")
+    target_sources(${TARGET_NAME} PRIVATE
+        external/imgui/imgui/backends/imgui_impl_sdl2.cpp
+        external/imgui/imgui/backends/imgui_impl_opengl3.cpp
+        external/imgui/imgui/imgui.cpp
+        external/imgui/imgui/imgui_draw.cpp
+        external/imgui/imgui/imgui_tables.cpp
+        external/imgui/imgui/imgui_widgets.cpp)
+    # Include the required directories
+    include_directories(external/imgui external/imgui/imgui)
 else()
     # Setup SDL2 package
     list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}"/external/sdl2/cmake")
