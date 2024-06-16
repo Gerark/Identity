@@ -37,7 +37,7 @@ jobs:
         run: cmake --build ${{github.workspace}}/build/cache
 
       - name: Rename HTML file
-        run: mv ${{ github.workspace }}/build/deploy/MyProject.html ${{ github.workspace }}/build/deploy/index.html
+        run: mv ${{ github.workspace }}/build/deploy/Identity.html ${{ github.workspace }}/build/deploy/index.html
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3

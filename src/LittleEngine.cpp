@@ -7,7 +7,7 @@
 void LittleEngine::init() {
 	_initSDL();
 	_engine.setupGLAttributes();
-	_window = _engine.createWindow("Antonino Liconti - CV");
+	_window = _engine.createWindow("Antonino Liconti");
 	_context = _engine.createContext(_window);
 	_initImGui();
 }
@@ -35,22 +35,30 @@ void LittleEngine::_initImGui() {
 
 	ImGui::StyleColorsDark();
 
-	//ImGuiIO& io = ImGui::GetIO();
-
-	// Load Fonts
-	// io.Fonts->AddFontFromFileTTF("data/xkcd-script.ttf", 23.0f);
-	// io.Fonts->AddFontFromFileTTF("data/xkcd-script.ttf", 18.0f);
-	// io.Fonts->AddFontFromFileTTF("data/xkcd-script.ttf", 26.0f);
-	// io.Fonts->AddFontFromFileTTF("data/xkcd-script.ttf", 32.0f);
-	// io.Fonts->AddFontDefault();
+	ImGuiIO& io = ImGui::GetIO();
+	io.Fonts->AddFontFromFileTTF("data/mangold.ttf", 23.0f);
+	io.Fonts->AddFontFromFileTTF("data/mangold.ttf", 18.0f);
+	io.Fonts->AddFontFromFileTTF("data/mangold.ttf", 26.0f);
+	io.Fonts->AddFontFromFileTTF("data/mangold.ttf", 32.0f);
+	io.Fonts->AddFontDefault();
 }
 
 bool LittleEngine::_internalLoop() {
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
 		ImGui_ImplSDL2_ProcessEvent(&event);
-		if (event.type == SDL_QUIT) {
+		switch (event.type) {
+		case SDL_QUIT:
 			return false;
+		case SDL_WINDOWEVENT:
+			if (event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(_window)) {
+				return false;
+			}
+
+			if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+				printf("Window resized to %d,%d\n", event.window.data1, event.window.data2);
+			}
+			break;
 		}
 	}
 

@@ -1,2 +1,2 @@
 cd build
-emrun MyProject.html
+emrun Identity.html

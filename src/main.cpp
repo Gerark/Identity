@@ -8,12 +8,22 @@ extern "C" int main(int /*argc*/, char** /*argv*/) {
 	engine.init();
 
 	engine.run([] () {
-		ImGui::Begin("Tao Mei!", &showWindow);
-		ImGui::Text("Test Test Test!");
-		if (ImGui::Button("Close Me")) {
-			showWindow = false;
+		ImGui::BeginMainMenuBar();
+
+		if (ImGui::BeginMenu("File")) {
+			if (ImGui::MenuItem("Open", "Ctrl+O")) {
+				// Open
+			}
+			if (ImGui::MenuItem("Save", "Ctrl+S")) {
+				// Save
+			}
+			if (ImGui::MenuItem("Close", "Ctrl+W")) {
+				// Close
+			}
+			ImGui::EndMenu();
 		}
-		ImGui::End();
+
+		ImGui::EndMainMenuBar();
 		return true;
 	});
 

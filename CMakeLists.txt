@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
-set(TARGET_NAME MyProject)
+set(TARGET_NAME Identity)
 set(COMMON_SOURCES src/main.cpp src/LittleEngine.cpp src/LittleEngine.h src/EngineImpl.cpp src/EngineImpl.h)
-
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Check if Emscripten is being used
 if(EMSCRIPTEN)    
@@ -13,7 +13,7 @@ if(EMSCRIPTEN)
     add_executable(${TARGET_NAME} ${COMMON_SOURCES})
 
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2 -s USE_WEBGL2=1 -s WASM=1 -s FULL_ES3=1 -std=c++2b")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2 -s USE_WEBGL2=1 --preload-file data -s WASM=1 -s FULL_ES3=1 -std=c++2b")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_SDL=2")
 
     # Let's manually add the imgui sources to simplify the build process
@@ -85,8 +85,24 @@ else()
         COMMAND_EXPAND_LISTS
     )
 
-    add_to_apps_folder(${TARGET_NAME} ${COMMON_SOURCES})
+    # Copy the data folder to the executable file directory
+    add_custom_target(RunPostBuildCommand ALL
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data $<TARGET_FILE_DIR:${TARGET_NAME}>/data
+        COMMAND_EXPAND_LISTS
+    )
+
+    # Set the working directory for visual studio
+    set_target_properties(
+        ${TARGET_NAME} PROPERTIES
+        VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:${TARGET_NAME}>
+    )
+    
+    add_to_apps_folder(${TARGET_NAME} "${COMMON_SOURCES}")
     
     # Set the project as the default startup project for the generated Visual Studio solution
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${TARGET_NAME})
+    
+    set_property(TARGET glad imgui PROPERTY FOLDER "external")
+    # Set a custom folder for the predefined targets in the generated Visual Studio solution
+    set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "_cmakeAndPostBuild")
 endif()
