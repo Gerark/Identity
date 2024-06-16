@@ -33,6 +33,8 @@ public:
 	}
 
 	SDL_Window* createWindow() {
+		auto width = 0.0;
+		auto height = 0.0;
 		emscripten_get_element_css_size("#canvas", &width, &height);
 		return SDL_CreateWindow("Antonino Liconti - CV",
 			SDL_WINDOWPOS_CENTERED,
@@ -50,9 +52,20 @@ public:
 	}
 
 	void run(const std::function<void()>& updateCallback) {
-		emscripten_set_main_loop(updateCallback, 0, 1);
+		_updateCallback = updateCallback;
+		emscripten_set_main_loop(_staticUpdateCallback, 0, 1);
 	}
+
+private:
+
+	static void _staticUpdateCallback() {
+		_updateCallback();
+	}
+
+	static std::function<void()> _updateCallback;
 };
+
+std::function<void()> EngineImpl::_updateCallback;
 
 #else
 
