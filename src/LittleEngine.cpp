@@ -12,11 +12,12 @@ void LittleEngine::init() {
 	_initImGui();
 }
 
-void LittleEngine::run(const std::function<void()>& updateCallback) {
+void LittleEngine::run(const UpdateCallback& updateCallback) {
 	_updateCallback = updateCallback;
-	_engine.run([this] () {
-		_internalLoop();
-	});
+	_engine.run(
+		[this] () { return _internalLoop(); },
+		[this] () { _cleanup(); }
+	);
 }
 
 void LittleEngine::_initSDL() {
@@ -44,13 +45,12 @@ void LittleEngine::_initImGui() {
 	// io.Fonts->AddFontDefault();
 }
 
-void LittleEngine::_internalLoop() {
+bool LittleEngine::_internalLoop() {
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
 		ImGui_ImplSDL2_ProcessEvent(&event);
 		if (event.type == SDL_QUIT) {
-			SDL_Quit();
-			exit(0);
+			return false;
 		}
 	}
 
@@ -58,7 +58,7 @@ void LittleEngine::_internalLoop() {
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
 
-	_updateCallback();
+	auto exit = _updateCallback();
 
 	ImGui::Render();
 
@@ -67,4 +67,15 @@ void LittleEngine::_internalLoop() {
 
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	SDL_GL_SwapWindow(_window);
+
+	return exit;
+}
+
+void LittleEngine::_cleanup() {
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplSDL2_Shutdown();
+	ImGui::DestroyContext();
+	SDL_GL_DeleteContext(_context);
+	SDL_DestroyWindow(_window);
+	SDL_Quit();
 }

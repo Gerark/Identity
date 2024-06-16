@@ -6,6 +6,9 @@
 #include <emscripten/html5.h>
 #include <SDL_opengles2.h>
 
+UpdateCallback EngineImpl::_updateCallback;
+ShutdownCallback EngineImpl::_shutdownCallback;
+
 void EngineImpl::setupGLAttributes() {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -35,13 +38,17 @@ SDL_GLContext EngineImpl::createContext(SDL_Window* window) {
 	return context;
 }
 
-void EngineImpl::run(const std::function<void()>& updateCallback) {
+void EngineImpl::run(const UpdateCallback& updateCallback, const ShutdownCallback& shutdownCallback) {
 	_updateCallback = updateCallback;
+	_shutdownCallback = shutdownCallback;
 	emscripten_set_main_loop(_staticUpdateCallback, 0, 1);
 }
 
 static void EngineImpl::_staticUpdateCallback() {
-	_updateCallback();
+	if (!_updateCallback()) {
+		emscripten_cancel_main_loop();
+		_shutdownCallback();
+	}
 }
 
 #else
@@ -76,10 +83,9 @@ SDL_GLContext EngineImpl::createContext(SDL_Window* window) {
 	return context;
 }
 
-void EngineImpl::run(const std::function<void()>& updateCallback) {
-	while (true) {
-		updateCallback();
-	}
+void EngineImpl::run(const UpdateCallback& updateCallback, const ShutdownCallback& shutdownCallback) {
+	while (updateCallback()) {}
+	shutdownCallback();
 }
 
 #endif

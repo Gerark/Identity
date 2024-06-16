@@ -5,15 +5,16 @@
 class LittleEngine {
 public:
 	void init();
-	void run(const std::function<void()>& updateCallback);
+	void run(const UpdateCallback& updateCallback);
 
 private:
 	void _initSDL();
 	void _initImGui();
-	void _internalLoop();
+	bool _internalLoop();
+	void _cleanup();
 
 	EngineImpl _engine;
 	SDL_Window* _window;
 	SDL_GLContext _context;
-	std::function<void()> _updateCallback;
+	UpdateCallback _updateCallback;
 };

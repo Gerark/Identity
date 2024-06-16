@@ -3,6 +3,9 @@
 #include <string_view>
 #include <functional>
 
+using UpdateCallback = std::function<bool()>;
+using ShutdownCallback = std::function<void()>;
+
 #ifdef __EMSCRIPTEN__
 
 #include <SDL2/SDL.h>
@@ -14,14 +17,13 @@ public:
 	void setupGLAttributes();
 	SDL_Window* createWindow(std::string_view title);
 	SDL_GLContext createContext(SDL_Window* window);
-	void run(const std::function<void()>& updateCallback);
+	void run(const UpdateCallback& updateCallback, const ShutdownCallback& shutdownCallback);
 
 private:
-	static void _staticUpdateCallback():
-		static std::function<void()> _updateCallback;
+	static void _staticUpdateCallback();
+	static UpdateCallback _updateCallback;
+	static ShutdownCallback _shutdownCallback;
 };
-
-std::function<void()> EngineImpl::_updateCallback;
 
 #else
 
@@ -33,7 +35,7 @@ public:
 	void setupGLAttributes();
 	SDL_Window* createWindow(std::string_view title);
 	SDL_GLContext createContext(SDL_Window* window);
-	void run(const std::function<void()>& updateCallback);
+	void run(const UpdateCallback& updateCallback, const ShutdownCallback& shutdownCallback);
 };
 
 #endif

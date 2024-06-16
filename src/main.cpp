@@ -14,6 +14,7 @@ extern "C" int main(int /*argc*/, char** /*argv*/) {
 			showWindow = false;
 		}
 		ImGui::End();
+		return true;
 	});
 
 	return 0;
