@@ -23,7 +23,6 @@ jobs:
 
       - name: Configure CMake
         run: emcmake cmake
-          -O2
           -DCMAKE_TOOLCHAIN_FILE=$EMSDK/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake
           -DCMAKE_CROSSCOMPILING_EMULATOR=$EMSDK_NODE/node
           -DCMAKE_BUILD_TYPE=Release
