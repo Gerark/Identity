@@ -2,6 +2,7 @@
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
+#include <emscripten/html5.h>
 #include <SDL_opengles2.h>
 #define GLFW_INCLUDE_ES3
 #include <GLES3/gl3.h>
@@ -40,11 +41,17 @@ int g_height;
 			js_resizeCanvas();
 		});*/
 int canvas_get_width() {
-	return 800;
+	auto width = 0.0;
+	auto height = 0.0;
+	emscripten_get_element_css_size("#canvas", &width, &height);
+	return width;
 }
 
 int canvas_get_height() {
-	return 600;
+	auto width = 0.0;
+	auto height = 0.0;
+	emscripten_get_element_css_size("#canvas", &width, &height);
+	return height;
 }
 
 void on_size_changed() {
@@ -61,6 +68,11 @@ void loop() {
 		g_width = width;
 		g_height = height;
 		on_size_changed();
+	}
+
+	SDL_Event event;
+	while (SDL_PollEvent(&event)) {
+		ImGui_ImplSDL2_ProcessEvent(&event);
 	}
 
 	// glfwPollEvents();
