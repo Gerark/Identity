@@ -5,16 +5,16 @@ set(COMMON_SOURCES src/main.cpp src/LittleEngine.cpp src/LittleEngine.h src/Engi
 
 
 # Check if Emscripten is being used
-if(EMSCRIPTEN)
-    set(CMAKE_EXECUTABLE_SUFFIX ".html")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2 -s USE_WEBGL2=1 -s WASM=1 -s FULL_ES3=1 -std=c++23")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_SDL=2")
-    
+if(EMSCRIPTEN)    
     # Set the project name and version
     project(${TARGET_NAME} VERSION 1.0)
 
     # Add the executable
     add_executable(${TARGET_NAME} ${COMMON_SOURCES})
+
+    set(CMAKE_EXECUTABLE_SUFFIX ".html")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2 -s USE_WEBGL2=1 -s WASM=1 -s FULL_ES3=1 -std=c++23")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_SDL=2")
 
     # Let's manually add the imgui sources to simplify the build process
     target_sources(${TARGET_NAME} PRIVATE
