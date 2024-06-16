@@ -30,7 +30,7 @@ jobs:
           -B${{github.workspace}}/build/cache
           -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${{github.workspace}}/build/deploy
           -G "Unix Makefiles"
-          -DCMAKE_CXX_FLAGS="--shell-file ${{github.workspace}}/src/emscripten_shell.html"
+          -DCMAKE_CXX_FLAGS="--shell-file ${{github.workspace}}/src/emscripten_shell.html --preload-file ${{github.workspace}}/data"
           -DEMSCRIPTEN=1
 
       - name: Build
