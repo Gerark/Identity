@@ -31,6 +31,7 @@ jobs:
           -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${{github.workspace}}/build/deploy
           -G "Unix Makefiles"
           -DCMAKE_CXX_FLAGS="--shell-file ${{github.workspace}}/src/emscripten_shell.html"
+          -DEMSCRIPTEN=1
 
       - name: Build
         run: cmake --build ${{github.workspace}}/build/cache
