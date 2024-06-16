@@ -17,11 +17,9 @@ public:
 	void run(const std::function<void()>& updateCallback);
 
 private:
-	static void _staticUpdateCallback():
-		static std::function<void()> _updateCallback;
+	static void _staticUpdateCallback();
+	static std::function<void()> _updateCallback;
 };
-
-std::function<void()> EngineImpl::_updateCallback;
 
 #else
 

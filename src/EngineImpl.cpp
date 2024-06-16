@@ -6,6 +6,8 @@
 #include <emscripten/html5.h>
 #include <SDL_opengles2.h>
 
+std::function<void()> EngineImpl::_updateCallback;
+
 void EngineImpl::setupGLAttributes() {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -40,7 +42,7 @@ void EngineImpl::run(const std::function<void()>& updateCallback) {
 	emscripten_set_main_loop(_staticUpdateCallback, 0, 1);
 }
 
-static void EngineImpl::_staticUpdateCallback() {
+void EngineImpl::_staticUpdateCallback() {
 	_updateCallback();
 }
 
