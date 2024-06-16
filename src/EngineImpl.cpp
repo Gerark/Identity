@@ -44,7 +44,7 @@ void EngineImpl::run(const UpdateCallback& updateCallback, const ShutdownCallbac
 	emscripten_set_main_loop(_staticUpdateCallback, 0, 1);
 }
 
-static void EngineImpl::_staticUpdateCallback() {
+void EngineImpl::_staticUpdateCallback() {
 	if (!_updateCallback()) {
 		emscripten_cancel_main_loop();
 		_shutdownCallback();
