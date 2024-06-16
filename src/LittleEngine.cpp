@@ -40,7 +40,7 @@ void LittleEngine::_initImGui() {
 	io.Fonts->AddFontFromFileTTF("data/mangold.ttf", 18.0f);
 	io.Fonts->AddFontFromFileTTF("data/mangold.ttf", 26.0f);
 	io.Fonts->AddFontFromFileTTF("data/mangold.ttf", 32.0f);
-	io.Fonts->AddFontDefault();
+	//io.Fonts->AddFontDefault();
 }
 
 bool LittleEngine::_internalLoop() {
