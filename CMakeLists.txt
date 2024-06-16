@@ -23,10 +23,11 @@ if(EMSCRIPTEN)
         external/imgui/imgui/imgui.cpp
         external/imgui/imgui/imgui_draw.cpp
         external/imgui/imgui/imgui_tables.cpp
-        external/imgui/imgui/imgui_widgets.cpp)
+        external/imgui/imgui/imgui_widgets.cpp
+        external/stb/stb/stb_image.h)
     
     # Include the required directories
-    include_directories(external/imgui external/imgui/imgui)    
+    include_directories(external/imgui external/imgui/imgui external/stb)    
 else()
     # Set C++23 as the standard to be used
     set(CMAKE_CXX_STANDARD 23)
@@ -72,6 +73,8 @@ else()
     add_subdirectory(external/glad)
     # Adding imgui
     add_subdirectory(external/imgui)
+    # Adding stb_image
+    add_subdirectory(external/stb)
 
     # Link the required libraries
     target_link_libraries(${TARGET_NAME} sdl2_wrapper)
