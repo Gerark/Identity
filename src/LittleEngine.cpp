@@ -1,6 +1,5 @@
 #include "LittleEngine.h"
 
-#include "imgui/imgui.h"
 #include "imgui/backends/imgui_impl_sdl2.h"
 #include "imgui/backends/imgui_impl_opengl3.h"
 
@@ -36,14 +35,20 @@ void LittleEngine::_initImGui() {
 	ImGui::StyleColorsDark();
 	_setImGuiStyle();
 
-	ImGuiIO& io = ImGui::GetIO();
-	io.Fonts->AddFontFromFileTTF("data/mangold.ttf", 23.0f);
-	io.Fonts->AddFontFromFileTTF("data/mangold.ttf", 18.0f);
-	io.Fonts->AddFontFromFileTTF("data/mangold.ttf", 26.0f);
-	io.Fonts->AddFontFromFileTTF("data/mangold.ttf", 32.0f);
-	//io.Fonts->AddFontDefault();
+	_addFont("data/mangold.ttf", {14, 18, 24, 28, 32}, 18);
 
 	glClearColor(0.1f, 0.1f, 0.1f, 1);
+}
+
+void LittleEngine::_addFont(std::string_view path, std::initializer_list<unsigned int> sizes, unsigned int defaultSize) {
+	auto& io = ImGui::GetIO();
+	for (auto size : sizes) {
+		auto font = io.Fonts->AddFontFromFileTTF(path.data(), static_cast<float>(size));
+		_fonts[size] = font;
+		if (defaultSize == size) {
+			io.FontDefault = font;
+		}
+	}
 }
 
 bool LittleEngine::_internalLoop() {
@@ -88,6 +93,14 @@ void LittleEngine::_cleanup() {
 	SDL_GL_DeleteContext(_context);
 	SDL_DestroyWindow(_window);
 	SDL_Quit();
+}
+
+ImFont* LittleEngine::getFontBySize(unsigned int size) {
+	if (auto itr = _fonts.find(size); itr != _fonts.end()) {
+		return itr->second;
+	}
+
+	return nullptr;
 }
 
 void LittleEngine::_setImGuiStyle() {
