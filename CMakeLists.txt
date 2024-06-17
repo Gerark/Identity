@@ -81,6 +81,7 @@ else()
     target_link_libraries(${TARGET_NAME} ${OPENGL_LIBRARIES})
     target_link_libraries(${TARGET_NAME} glad)
     target_link_libraries(${TARGET_NAME} imgui)
+    target_link_libraries(${TARGET_NAME} stb)
 
     # Copy all the dependencies ( dll ) to the executable file directory
     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD

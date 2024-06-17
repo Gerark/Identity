@@ -33,7 +33,7 @@ extern "C" int main(int /*argc*/, char** /*argv*/) {
 	engine.run([texture] () {
 		ImGui::BeginMainMenuBar();
 
-		if (ImGui::BeginMenu("File")) {
+		if (ImGui::BeginMenu("About Me")) {
 			if (ImGui::MenuItem("Open", "Ctrl+O")) {
 				// Open
 			}
