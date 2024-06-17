@@ -18,6 +18,7 @@ public:
 	SDL_Window* createWindow(std::string_view title);
 	SDL_GLContext createContext(SDL_Window* window);
 	void run(const UpdateCallback& updateCallback, const ShutdownCallback& shutdownCallback);
+	void openUrl(std::string_view url);
 
 private:
 	static void _staticUpdateCallback();
@@ -36,6 +37,7 @@ public:
 	SDL_Window* createWindow(std::string_view title);
 	SDL_GLContext createContext(SDL_Window* window);
 	void run(const UpdateCallback& updateCallback, const ShutdownCallback& shutdownCallback);
+	void openUrl(std::string_view url);
 };
 
 #endif

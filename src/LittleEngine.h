@@ -5,6 +5,7 @@
 #include "imgui/imgui.h"
 
 #include <unordered_map>
+#include <string_view>
 
 class LittleEngine {
 public:
@@ -12,6 +13,7 @@ public:
 	void run(const UpdateCallback& updateCallback);
 
 	ImFont* getFontBySize(unsigned int size);
+	void openUrl(std::string_view url);
 
 private:
 	void _initSDL();

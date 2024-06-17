@@ -51,6 +51,10 @@ void EngineImpl::_staticUpdateCallback() {
 	}
 }
 
+void EngineImpl::openUrl(std::string_view url) {
+	emscripten_run_script((std::string("window.open('") + url.data() + "')").c_str());
+}
+
 #else
 
 void EngineImpl::setupGLAttributes() {
@@ -86,6 +90,10 @@ SDL_GLContext EngineImpl::createContext(SDL_Window* window) {
 void EngineImpl::run(const UpdateCallback& updateCallback, const ShutdownCallback& shutdownCallback) {
 	while (updateCallback()) {}
 	shutdownCallback();
+}
+
+void EngineImpl::openUrl(std::string_view url) {
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Open URL", url.data(), nullptr);
 }
 
 #endif

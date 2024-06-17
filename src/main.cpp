@@ -74,10 +74,26 @@ private:
 		_popFontSize();
 
 		_pushFontSize(24);
-		_centeredText("I'm \"Gerark\" Antonino Liconti");
+		_centeredText("I'm Antonino Liconti ( Gerark )");
 		_centeredText("A Senior Software Developer passionate about the gaming industry, UI/UX, and narrative storytelling.");
 		_popFontSize();
+
+		ImGui::Dummy({0, 300});
+		_pushFontSize(18);
+		_centeredText("This is a WebAssembly OpenGL application written in C++, utilizing ImGui to display the user interface.");
+		_popFontSize();
+
 		ImGui::PopStyleColor();
+
+		ImGui::Dummy({0, 32});
+		ImVec2 windowCenter = ImVec2(ImGui::GetWindowPos().x + ImGui::GetWindowSize().x * 0.5f, ImGui::GetCursorPosY());
+		// Set the cursor to the calculated center position
+		ImGui::SetCursorPosX(windowCenter.x - ImGui::CalcTextSize("Check the GitHub repo").x * 0.5f);
+
+		bool checkRepoPressed = ImGui::Button("Check the GitHub repo");
+		if (checkRepoPressed) {
+			_engine.openUrl("https://github.com/Gerark/Identity");
+		}
 
 		ImGui::End();
 	}

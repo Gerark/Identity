@@ -103,6 +103,10 @@ ImFont* LittleEngine::getFontBySize(unsigned int size) {
 	return nullptr;
 }
 
+void LittleEngine::openUrl(std::string_view url) {
+	_engine.openUrl(url);
+}
+
 void LittleEngine::_setImGuiStyle() {
 	ImGuiStyle& style = ImGui::GetStyle();
 
@@ -118,7 +122,7 @@ void LittleEngine::_setImGuiStyle() {
 	style.ChildBorderSize = 1.0f;
 	style.PopupRounding = 0.0f;
 	style.PopupBorderSize = 1.0f;
-	style.FramePadding = ImVec2(4.0f, 3.0f);
+	style.FramePadding = ImVec2(12.0f, 6.0f);
 	style.FrameRounding = 0.0f;
 	style.FrameBorderSize = 0.0f;
 	style.ItemSpacing = ImVec2(8.0f, 4.0f);
