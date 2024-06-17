@@ -7,6 +7,7 @@
 
 #include <unordered_map>
 #include <memory>
+#include <string>
 
 struct Page {
 	std::function<void()> renderFunction;
