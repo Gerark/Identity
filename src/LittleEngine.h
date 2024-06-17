@@ -12,6 +12,7 @@ private:
 	void _initImGui();
 	bool _internalLoop();
 	void _cleanup();
+	void _setImGuiStyle();
 
 	EngineImpl _engine;
 	SDL_Window* _window;

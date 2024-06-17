@@ -6,6 +6,7 @@
 #include "stb/stb_image.h"
 
 bool showWindow = true;
+bool test = false;
 extern "C" int main(int /*argc*/, char** /*argv*/) {
 	LittleEngine engine;
 	engine.init();
@@ -31,26 +32,32 @@ extern "C" int main(int /*argc*/, char** /*argv*/) {
 	stbi_image_free(textureData);
 
 	engine.run([texture] () {
+		auto& style = ImGui::GetStyle();
+
 		ImGui::BeginMainMenuBar();
 
-		if (ImGui::BeginMenu("About Me")) {
-			if (ImGui::MenuItem("Open", "Ctrl+O")) {
-				// Open
-			}
-			if (ImGui::MenuItem("Save", "Ctrl+S")) {
-				// Save
-			}
-			if (ImGui::MenuItem("Close", "Ctrl+W")) {
-				// Close
-			}
-			ImGui::EndMenu();
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(style.FramePadding.x + 8, style.FramePadding.y));
+		if (ImGui::Button("Home")) {
+			test = true;
 		}
+		if (ImGui::Button("Portfolio")) {
+		}
+		if (ImGui::Button("Resume")) {
+		}
+		if (ImGui::Button("About Me")) {
+		}
+		ImGui::PopStyleVar();
 
-		ImGui::Begin("Hello!");
+		ImGui::EndMainMenuBar();
+
+		auto size = ImGui::GetIO().DisplaySize;
+		auto cursorPos = ImGui::GetCursorPos();
+		ImGui::SetNextWindowSize({size.x - style.ItemSpacing.x * 2, size.y - style.ItemSpacing.y * 2 - cursorPos.y});
+		ImGui::SetNextWindowPos(cursorPos);
+		ImGui::Begin("Hello!", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings);
 		ImGui::Image((void*)(intptr_t)texture, ImVec2(64, 64));
 		ImGui::End();
 
-		ImGui::EndMainMenuBar();
 		return true;
 	});
 
