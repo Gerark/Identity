@@ -17,6 +17,7 @@ enum class PageType {
 };
 
 struct Page {
+	Page(std::string title, std::function<void()> renderFunction): title(std::move(title)), renderFunction(std::move(renderFunction)) {}
 	std::string title;
 	std::function<void()> renderFunction;
 };
