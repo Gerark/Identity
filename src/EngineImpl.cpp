@@ -5,6 +5,7 @@
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #include <SDL_opengles2.h>
+#include <string>
 
 UpdateCallback EngineImpl::_updateCallback;
 ShutdownCallback EngineImpl::_shutdownCallback;
