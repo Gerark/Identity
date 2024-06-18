@@ -3,6 +3,9 @@
 #include "imgui/backends/imgui_impl_sdl2.h"
 #include "imgui/backends/imgui_impl_opengl3.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb/stb_image.h"
+
 void LittleEngine::init() {
 	_initSDL();
 	_engine.setupGLAttributes();
@@ -101,6 +104,27 @@ ImFont* LittleEngine::getFontBySize(unsigned int size) {
 	}
 
 	return nullptr;
+}
+
+TextureInfo LittleEngine::loadTexture(std::string_view path) {
+	TextureInfo textureInfo;
+
+	unsigned char* textureData = stbi_load(path.data(), &textureInfo.width, &textureInfo.height, &textureInfo.channels, 0);
+
+	glGenTextures(1, &textureInfo.id);
+	glBindTexture(GL_TEXTURE_2D, textureInfo.id);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, textureInfo.width, textureInfo.height, 0, textureInfo.channels > 3 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, textureData);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	stbi_image_free(textureData);
+	_textures.push_back(textureInfo.id);
+	return textureInfo;
 }
 
 void LittleEngine::openUrl(std::string_view url) {

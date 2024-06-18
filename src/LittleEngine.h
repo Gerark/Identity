@@ -7,6 +7,25 @@
 #include <unordered_map>
 #include <string_view>
 
+struct TextureInfo {
+	GLuint id{};
+	int width{};
+	int height{};
+	int channels{};
+
+	void* toImGui() {
+		return reinterpret_cast<void*>(static_cast<intptr_t>(id));
+	}
+
+	ImVec2 toImGuiSize() {
+		return ImVec2(static_cast<float>(width), static_cast<float>(height));
+	}
+};
+
+/*
+* The LittleEngine class is mostly a little wrapper around openGL function call and ImGui.
+* It's the only entry point for the use of any openGL layering. It's not pretending to be advanced at all.
+*/
 class LittleEngine {
 public:
 	void init();
@@ -14,6 +33,8 @@ public:
 
 	ImFont* getFontBySize(unsigned int size);
 	void openUrl(std::string_view url);
+
+	TextureInfo loadTexture(std::string_view path);
 
 private:
 	void _initSDL();
@@ -28,4 +49,5 @@ private:
 	SDL_GLContext _context;
 	UpdateCallback _updateCallback;
 	std::unordered_map<unsigned int, ImFont*> _fonts;
+	std::vector<GLuint> _textures;
 };
