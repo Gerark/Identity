@@ -71,19 +71,20 @@ private:
 		_centeredText("Welcome to my website!");
 		ImGui::Dummy({0, 16});
 		_popFontSize();
-
+		/*
 		_pushFontSize(24);
 		_centeredText("I'm Antonino Liconti ( Gerark )");
 		_centeredText("A Senior Software Developer passionate about the gaming industry, UI/UX, and narrative storytelling.");
 		_popFontSize();
+		*/
 
 		auto textureSize = _oneDoesNotTexture.toImGuiSize();
 		auto ratio = textureSize.y / textureSize.x;
-		textureSize.y = 0.3f * displaySize.y;
+		textureSize.y = 0.1f * displaySize.y;
 		textureSize.x = textureSize.y / ratio;
 		ImGui::Image(_oneDoesNotTexture.toImGui(), textureSize);
 
-		ImGui::Dummy({0, 100});
+		//ImGui::Dummy({0, 100});
 		_pushFontSize(18);
 		_centeredText("This is a WebAssembly OpenGL application written in C++, utilizing ImGui to display the user interface.");
 		_popFontSize();

@@ -9,7 +9,7 @@
 void LittleEngine::init() {
 	_initSDL();
 	_engine.setupGLAttributes();
-	_window = _engine.createWindow("Antonino Liconti");
+	_window = _engine.createWindow("Test");
 	_context = _engine.createContext(_window);
 	_initImGui();
 }
